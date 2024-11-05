@@ -68,7 +68,7 @@ In the `client_id` Authorization Request parameter and other places where the Cl
 <client_id_scheme>:<orig_client_id>
 ```
 
-Here, `<client_id_scheme>` is the Client Identifier Scheme and `<orig_client_id>` is an identifier for the Client within the namespace of that scheme. See (#client_identifier_schemes) for Client Identifier Schemes defined by this specification. 
+Here, `<client_id_scheme>` is the Client Identifier Scheme and `<orig_client_id>` is an identifier for the Client within the namespace of that scheme. See (#client_identifier_schemes) for Client Identifier Schemes defined by this specification.
 
 Authorization Servers MUST use the presence of a `:` (colon) character to determine whether a Client Identifier Scheme is used. If a `:` character is present, the Authorization Server MUST interpret the Client Identifier according to the Client Identifier Scheme, here defined as the string before the (first) `:` character. If the Authorization Server does not support the Client Identifier Scheme, the Authorization Server MUST refuse the request.
 
