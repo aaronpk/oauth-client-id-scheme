@@ -135,12 +135,12 @@ Table of Contents
    are prefixed to the usual Client Identifier, separated by a : (colon)
    character:
 
-   &lt;client_id_scheme>:&lt;orig_client_id>
+   <client_id_scheme>:<orig_client_id>
 
    Here, <client_id_scheme> is the Client Identifier Scheme and
-   &lt;orig_client_id> is an identifier for the Client within the
-   namespace of that scheme.  See (#client_identifier_schemes) for
-   Client Identifier Schemes defined by this specification.
+   <orig_client_id> is an identifier for the Client within the namespace
+   of that scheme.  See (#client_identifier_schemes) for Client
+   Identifier Schemes defined by this specification.
 
    Authorization Servers MUST use the presence of a : (colon) character
    to determine whether a Client Identifier Scheme is used.  If a :
@@ -211,15 +211,17 @@ Table of Contents
    The following is a non-normative example of a request with this
    Client Identifier Scheme:
 
-   HTTP/1.1 302 Found Location: https://client.example.org/universal-
-   link?  response_type=vp_token
-   &client_id=redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb
-   &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
-   &presentation_definition=...  &nonce=n-0S6_WzA2Mj
-   &client_metadata=%7B%22vp_formats%22:%7B%22jose_vp%22:%
-   7B%22alg%22:%5B%22EdDSA%22,%22ES256K%22%5D%7D,%22di
-   _vc%22:%7B%22proof_type%22:%5B%22DataIntegrityProof%22%5D,%22
-   cryptosuite%22:%5B%22ecdsa-sd-2023%22%5D%7D%7D%7D
+   HTTP/1.1 302 Found
+   Location: https://client.example.org/universal-link?
+     response_type=vp_token
+     &client_id=redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb
+     &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+     &presentation_definition=...
+     &nonce=n-0S6_WzA2Mj
+     &client_metadata=%7B%22vp_formats%22:%7B%22jose_vp%22:%
+     7B%22alg%22:%5B%22EdDSA%22,%22ES256K%22%5D%7D,%22di
+     _vc%22:%7B%22proof_type%22:%5B%22DataIntegrityProof%22%5D,%22
+     cryptosuite%22:%5B%22ecdsa-sd-2023%22%5D%7D%7D%7D
 
    *  federation: This value indicates that the Client Identifier is an
       Entity Identifier defined in OpenID Federation
@@ -314,11 +316,13 @@ Table of Contents
 
    The following is a non-normative example of an Authorization Request:
 
-   GET /authorize?  response_type=vp_token
-   &client_id=redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb
-   &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
-   &presentation_definition=...  &transaction_data=...
-   &nonce=n-0S6_WzA2Mj HTTP/1.1
+   GET /authorize?
+     response_type=vp_token
+     &client_id=redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb
+     &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+     &presentation_definition=...
+     &transaction_data=...
+     &nonce=n-0S6_WzA2Mj HTTP/1.1
 
 5.  Todo: Server Metadata
 

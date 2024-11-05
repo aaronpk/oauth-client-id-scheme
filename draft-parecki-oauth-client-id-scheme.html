@@ -1282,10 +1282,12 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-syntax" class="section-name selfRef">Syntax</a>
         </h3>
 <p id="section-3.1-1">In the <code>client_id</code> Authorization Request parameter and other places where the Client Identifier is used, the Client Identifier Schemes are prefixed to the usual Client Identifier, separated by a <code>:</code> (colon) character:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2"><code>
-&amp;lt;client_id_scheme&gt;:&amp;lt;orig_client_id&gt;
-</code><a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">Here, <code>&lt;client_id_scheme&gt;</code> is the Client Identifier Scheme and <code>&amp;lt;orig_client_id&gt;</code> is an identifier for the Client within the namespace of that scheme. See (#client_identifier_schemes) for Client Identifier Schemes defined by this specification.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-2">
+<pre>
+&lt;client_id_scheme&gt;:&lt;orig_client_id&gt;
+</pre><a href="#section-3.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-3">Here, <code>&lt;client_id_scheme&gt;</code> is the Client Identifier Scheme and <code>&lt;orig_client_id&gt;</code> is an identifier for the Client within the namespace of that scheme. See (#client_identifier_schemes) for Client Identifier Schemes defined by this specification.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <p id="section-3.1-4">Authorization Servers <span class="bcp14">MUST</span> use the presence of a <code>:</code> (colon) character to determine whether a Client Identifier Scheme is used. If a <code>:</code> character is present, the Authorization Server <span class="bcp14">MUST</span> interpret the Client Identifier according to the Client Identifier Scheme, here defined as the string before the (first) <code>:</code> character. If the Authorization Server does not support the Client Identifier Scheme, the Authorization Server <span class="bcp14">MUST</span> refuse the request.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 <p id="section-3.1-5">For example, an Authorization Request might contain <code>client_id=Client_attestation:example-client</code> to indicate that the <code>Client_attestation</code> Client Identifier Scheme is to be used and that within this scheme, the Client can be identified by the string <code>example-client</code>. The presentation would contain the full <code>Client_attestation:example-client</code> string as the audience (intended receiver) and the same full string would be used as the Client Identifier anywhere in the OAuth flow.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
 <p id="section-3.1-6">Note that the Client needs to determine which Client Identifier Schemes the Authorization Server supports prior to sending the Authorization Request in order to choose a supported scheme.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
@@ -1329,7 +1331,8 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 </li>
         </ul>
 <p id="section-3.5-3">The following is a non-normative example of a request with this Client Identifier Scheme:<a href="#section-3.5-3" class="pilcrow">¶</a></p>
-<p id="section-3.5-4"><code>
+<div class="alignLeft art-text artwork" id="section-3.5-4">
+<pre>
 HTTP/1.1 302 Found
 Location: https://client.example.org/universal-link?
   response_type=vp_token
@@ -1341,7 +1344,8 @@ Location: https://client.example.org/universal-link?
   7B%22alg%22:%5B%22EdDSA%22,%22ES256K%22%5D%7D,%22di
   _vc%22:%7B%22proof_type%22:%5B%22DataIntegrityProof%22%5D,%22
   cryptosuite%22:%5B%22ecdsa-sd-2023%22%5D%7D%7D%7D
-</code><a href="#section-3.5-4" class="pilcrow">¶</a></p>
+</pre><a href="#section-3.5-4" class="pilcrow">¶</a>
+</div>
 <ul class="normal">
 <li class="normal" id="section-3.5-5.1">
             <p id="section-3.5-5.1.1"><code>federation</code>: This value indicates that the Client Identifier is an Entity Identifier defined in OpenID Federation <span>[<a href="#OpenID.Federation" class="cite xref">OpenID.Federation</a>]</span>. Since the Entity Identifier is already defined to start with <code>federation:</code>, this Client Identifier Scheme <span class="bcp14">MUST NOT</span> be prefixed additionally. Processing rules given in <span>[<a href="#OpenID.Federation" class="cite xref">OpenID.Federation</a>]</span> <span class="bcp14">MUST</span> be followed. Automatic Registration as defined in <span>[<a href="#OpenID.Federation" class="cite xref">OpenID.Federation</a>]</span> <span class="bcp14">MUST</span> be used. The Authorization Request <span class="bcp14">MAY</span> also contain a <code>trust_chain</code> parameter. The final Client metadata is obtained from the Trust Chain after applying the policies, according to <span>[<a href="#OpenID.Federation" class="cite xref">OpenID.Federation</a>]</span>. The <code>client_metadata</code> parameter, if present in the Authorization Request, <span class="bcp14">MUST</span> be ignored when this Client Identifier scheme is used. Example Client Identifier: <code>federation:https://federation-client.example.com</code>.<a href="#section-3.5-5.1.1" class="pilcrow">¶</a></p>
@@ -1369,7 +1373,8 @@ Location: https://client.example.org/universal-link?
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-example" class="section-name selfRef">Example</a>
       </h2>
 <p id="section-4-1">The following is a non-normative example of an Authorization Request:<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2"><code>
+<div class="alignLeft art-text artwork" id="section-4-2">
+<pre>
 GET /authorize?
   response_type=vp_token
   &amp;client_id=redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb
@@ -1377,7 +1382,8 @@ GET /authorize?
   &amp;presentation_definition=...
   &amp;transaction_data=...
   &amp;nonce=n-0S6_WzA2Mj HTTP/1.1
-</code><a href="#section-4-2" class="pilcrow">¶</a></p>
+</pre><a href="#section-4-2" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
 <div id="todo-server-metadata">
