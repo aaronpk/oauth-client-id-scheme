@@ -31,6 +31,11 @@ author:
     organization: Authlete
     email: "mail@danielfett.de"
 
+  -
+    fullname: "Joseph Heenan"
+    organization: Authlete
+    email: "joseph@heenan.me.uk"
+
 normative:
   - RFC6749:
 
@@ -39,7 +44,7 @@ informative:
 
 --- abstract
 
-This specification defines the concept of a Client Identifier Scheme to enable supporting Authoriztion Servers and Clients to use more than one mechanism to obtain and validate Client metadata.
+This specification defines the concept of a Client Identifier Scheme to enable Authorization Servers and Clients to use more than one mechanism to obtain and validate Client metadata.
 
 --- middle
 
@@ -92,9 +97,9 @@ Confusing Clients using a Client Identifier Scheme with those using none can lea
 
 ### Defined Client Identifier Schemes {#client_identifier_schemes}
 
-This specification defines the following Client Identifier Schemes, followed by the examples where applicable: 
+This specification defines the following Client Identifier Schemes, followed by the examples where applicable:
 
-* `redirect_uri`: This value indicates that the Client Identifier (without the prefix `redirect_uri:`) is the Client's Redirect URI (or Response URI when Response Mode `direct_post` is used). The Authorization Request MUST NOT be signed. The Client MAY omit the `redirect_uri` Authorization Request parameter (or `response_uri` when Response Mode `direct_post` is used). All Client metadata parameters MUST be passed using the `client_metadata` parameter defined in (OpenID4VP). Example Client Identifier: `redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb`.
+* `redirect_uri`: This value indicates that the Client Identifier (without the prefix `redirect_uri:`) is the Client's Redirect URI (or Response URI when Response Mode `direct_post` is used). The Authorization Request MUST NOT be signed. The Client MAY omit the `redirect_uri` Authorization Request parameter. Example Client Identifier: `redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb`.
 
 The following is a non-normative example of a request with this Client Identifier Scheme:
 
@@ -127,7 +132,7 @@ Location: https://client.example.org/universal-link?
 # Example
 
 
-The following is a non-normative example of an Authorization Request: 
+The following is a non-normative example of an Authorization Request:
 
 ```
 GET /authorize?
