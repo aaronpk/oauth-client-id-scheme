@@ -105,11 +105,9 @@ The Client Identifier Scheme is a string that MAY be communicated by the Client 
 
 In the `client_id` Authorization Request parameter and other places where the Client Identifier is used, the Client Identifier Schemes are prefixed to the usual Client Identifier, separated by a `:` (colon) character:
 
-```
-&lt;client_id_scheme>:&lt;orig_client_id>
-```
+    <client_id_scheme>:<orig_client_id>
 
-Here, `<client_id_scheme>` is the Client Identifier Scheme and `&lt;orig_client_id>` is an identifier for the Client within the namespace of that scheme. See (#client_identifier_schemes) for Client Identifier Schemes defined by this specification.
+Here, `<client_id_scheme>` is the Client Identifier Scheme and `<orig_client_id>` is an identifier for the Client within the namespace of that scheme. See (#client_identifier_schemes) for Client Identifier Schemes defined by this specification.
 
 Authorization Servers MUST use the presence of a `:` (colon) character to determine whether a Client Identifier Scheme is used. If a `:` character is present, the Authorization Server MUST interpret the Client Identifier according to the Client Identifier Scheme, here defined as the string before the (first) `:` character. If the Authorization Server does not support the Client Identifier Scheme, the Authorization Server MUST refuse the request.
 
@@ -141,19 +139,17 @@ This specification defines the following Client Identifier Schemes, followed by 
 
 The following is a non-normative example of a request with this Client Identifier Scheme:
 
-```
-HTTP/1.1 302 Found
-Location: https://client.example.org/universal-link?
-  response_type=vp_token
-  &client_id=redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb
-  &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
-  &presentation_definition=...
-  &nonce=n-0S6_WzA2Mj
-  &client_metadata=%7B%22vp_formats%22:%7B%22jose_vp%22:%
-  7B%22alg%22:%5B%22EdDSA%22,%22ES256K%22%5D%7D,%22di
-  _vc%22:%7B%22proof_type%22:%5B%22DataIntegrityProof%22%5D,%22
-  cryptosuite%22:%5B%22ecdsa-sd-2023%22%5D%7D%7D%7D
-```
+    HTTP/1.1 302 Found
+    Location: https://client.example.org/universal-link?
+      response_type=vp_token
+      &client_id=redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb
+      &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+      &presentation_definition=...
+      &nonce=n-0S6_WzA2Mj
+      &client_metadata=%7B%22vp_formats%22:%7B%22jose_vp%22:%
+      7B%22alg%22:%5B%22EdDSA%22,%22ES256K%22%5D%7D,%22di
+      _vc%22:%7B%22proof_type%22:%5B%22DataIntegrityProof%22%5D,%22
+      cryptosuite%22:%5B%22ecdsa-sd-2023%22%5D%7D%7D%7D
 
 * `federation`: This value indicates that the Client Identifier is an Entity Identifier defined in OpenID Federation {{OpenID.Federation}}. Since the Entity Identifier is already defined to start with `federation:`, this Client Identifier Scheme MUST NOT be prefixed additionally. Processing rules given in {{OpenID.Federation}} MUST be followed. Automatic Registration as defined in {{OpenID.Federation}} MUST be used. The Authorization Request MAY also contain a `trust_chain` parameter. The final Client metadata is obtained from the Trust Chain after applying the policies, according to {{OpenID.Federation}}. The `client_metadata` parameter, if present in the Authorization Request, MUST be ignored when this Client Identifier scheme is used. Example Client Identifier: `federation:https://federation-client.example.com`.
 
@@ -172,15 +168,13 @@ Location: https://client.example.org/universal-link?
 
 The following is a non-normative example of an Authorization Request:
 
-```
-GET /authorize?
-  response_type=vp_token
-  &client_id=redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb
-  &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
-  &presentation_definition=...
-  &transaction_data=...
-  &nonce=n-0S6_WzA2Mj HTTP/1.1
-```
+    GET /authorize?
+      response_type=vp_token
+      &client_id=redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb
+      &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+      &presentation_definition=...
+      &transaction_data=...
+      &nonce=n-0S6_WzA2Mj HTTP/1.1
 
 # Todo: Server Metadata
 
