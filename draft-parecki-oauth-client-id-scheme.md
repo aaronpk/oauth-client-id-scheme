@@ -37,6 +37,29 @@ author:
 
 normative:
   RFC6749:
+  RFC5280:
+  RFC7515:
+  DID-Core:
+    title: "DID Core"
+    target: https://www.w3.org/TR/did-core/
+    date: 2022-07-19
+  OpenID.Federation:
+    title: "OpenID Federation 1.0"
+    date: 2024-05-17
+    target: https://openid.net/specs/openid-federation-1_0.html
+    author:
+      - name: R. Hedberg
+        org: independent
+      - name: M.B. Jones
+        org: Self-Issued Consulting
+      - name: A.Å. Solberg
+        org: Sikt
+      - name: J. Bradley
+        org: Yubico
+      - name: G. De Marco
+        org: independent
+      - name: V. Dzhuvinov
+        org: Connect2id
 
 informative:
   RFC7591:
@@ -55,23 +78,6 @@ informative:
         org: Google
       - name: C. Mortimore
         org: Disney
-  OpenID.Federation:
-    title: "OpenID Federation 1.0"
-    date: 2024-05-17
-    target: https://openid.net/specs/openid-federation-1_0.html
-    author:
-      - name: R. Hedberg
-        org: independent
-      - name: M.B. Jones
-        org: Self-Issued Consulting
-      - name: A.Å. Solberg
-        org: Sikt
-      - name: J. Bradley
-        org: Yubico
-      - name: G. De Marco
-        org: independent
-      - name: V. Dzhuvinov
-        org: Connect2id
 
 
 --- abstract
@@ -151,13 +157,13 @@ Location: https://client.example.org/universal-link?
 
 * `federation`: This value indicates that the Client Identifier is an Entity Identifier defined in OpenID Federation {{OpenID.Federation}}. Since the Entity Identifier is already defined to start with `federation:`, this Client Identifier Scheme MUST NOT be prefixed additionally. Processing rules given in {{OpenID.Federation}} MUST be followed. Automatic Registration as defined in {{OpenID.Federation}} MUST be used. The Authorization Request MAY also contain a `trust_chain` parameter. The final Client metadata is obtained from the Trust Chain after applying the policies, according to {{OpenID.Federation}}. The `client_metadata` parameter, if present in the Authorization Request, MUST be ignored when this Client Identifier scheme is used. Example Client Identifier: `federation:https://federation-client.example.com`.
 
-* `did`: This value indicates that the Client Identifier is a DID defined in [@!DID-Core]. Since the DID URI is already defined to start with `did:`, this Client Identifier Scheme MUST NOT be prefixed additionally. The request MUST be signed with a private key associated with the DID. A public key to verify the signature MUST be obtained from the `verificationMethod` property of a DID Document. Since DID Document may include multiple public keys, a particular public key used to sign the request in question MUST be identified by the `kid` in the JOSE Header. To obtain the DID Document, the Authorization Server MUST use DID Resolution defined by the DID method used by the Client. All Client metadata other than the public key MUST be obtained from the `client_metadata` parameter as defined in (#new_parameters). Example Client Identifier: `did:example:123#1`.
+* `did`: This value indicates that the Client Identifier is a DID defined in {{DID-Core}}. Since the DID URI is already defined to start with `did:`, this Client Identifier Scheme MUST NOT be prefixed additionally. The request MUST be signed with a private key associated with the DID. A public key to verify the signature MUST be obtained from the `verificationMethod` property of a DID Document. Since DID Document may include multiple public keys, a particular public key used to sign the request in question MUST be identified by the `kid` in the JOSE Header. To obtain the DID Document, the Authorization Server MUST use DID Resolution defined by the DID method used by the Client. All Client metadata other than the public key MUST be obtained from the `client_metadata` parameter as defined in (#new_parameters). Example Client Identifier: `did:example:123#1`.
 
 * `Client_attestation`: This Client Identifier Scheme allows the Client to authenticate using a JWT that is bound to a certain public key as defined in (OpenID4VP: Client Attestation). When the Client Identifier Scheme is `Client_attestation`, the Client Identifier MUST equal the `sub` claim value in the Client attestation JWT. The request MUST be signed with the private key corresponding to the public key in the `cnf` claim in the Client attestation JWT. This serves as proof of possesion of this key. The Client attestation JWT MUST be added to the `jwt` JOSE Header of the request object (see (OpenID4VP: Client Attestation)). The Authorization Server MUST validate the signature on the Client attestation JWT. The `iss` claim value of the Client Attestation JWT MUST identify a party the Authorization Server trusts for issuing Client Attestation JWTs. If the Authorization Server cannot establish trust, it MUST refuse the request. If the issuer of the Client Attestation JWT adds a `redirect_uris` claim to the attestation, the Authorization Server MUST ensure the `redirect_uri` request parameter value exactly matches one of the `redirect_uris` claim entries. All Client metadata other than the public key MUST be obtained from the `client_metadata` parameter. Example Client Identifier: `Client_attestation:Client.example`.
 
-* `x509_san_dns`: When the Client Identifier Scheme is `x509_san_dns`, the Client Identifier MUST be a DNS name and match a `dNSName` Subject Alternative Name (SAN) [@!RFC5280] entry in the leaf certificate passed with the request. The request MUST be signed with the private key corresponding to the public key in the leaf X.509 certificate of the certificate chain added to the request in the `x5c` JOSE header [@!RFC7515] of the signed request object. The Authorization Server MUST validate the signature and the trust chain of the X.509 certificate. All Client metadata other than the public key MUST be obtained from the `client_metadata` parameter. If the Authorization Server can establish trust in the Client Identifier authenticated through the certificate, e.g. because the Client Identifier is contained in a list of trusted Client Identifiers, it may allow the client to freely choose the `redirect_uri` value. If not, the FQDN of the `redirect_uri` value MUST match the Client Identifier without the prefix `x509_san_dns:`. Example Client Identifier: `x509_san_dns:client.example.org`.
+* `x509_san_dns`: When the Client Identifier Scheme is `x509_san_dns`, the Client Identifier MUST be a DNS name and match a `dNSName` Subject Alternative Name (SAN) {{RFC5280}} entry in the leaf certificate passed with the request. The request MUST be signed with the private key corresponding to the public key in the leaf X.509 certificate of the certificate chain added to the request in the `x5c` JOSE header {{RFC7515}} of the signed request object. The Authorization Server MUST validate the signature and the trust chain of the X.509 certificate. All Client metadata other than the public key MUST be obtained from the `client_metadata` parameter. If the Authorization Server can establish trust in the Client Identifier authenticated through the certificate, e.g. because the Client Identifier is contained in a list of trusted Client Identifiers, it may allow the client to freely choose the `redirect_uri` value. If not, the FQDN of the `redirect_uri` value MUST match the Client Identifier without the prefix `x509_san_dns:`. Example Client Identifier: `x509_san_dns:client.example.org`.
 
-* `x509_san_uri`: When the Client Identifier Scheme is `x509_san_uri`, the Client Identifier MUST be a URI and match a `uniformResourceIdentifier` Subject Alternative Name (SAN) [@!RFC5280] entry in the leaf certificate passed with the request. The request MUST be signed with the private key corresponding to the public key in the leaf X.509 certificate of the certificate chain added to the request in the `x5c` JOSE header [@!RFC7515] of the signed request object. The Authorization Server MUST validate the signature and the trust chain of the X.509 certificate. All Client metadata other than the public key MUST be obtained from the `client_metadata` parameter. If the Authorization Server can establish trust in the Client Identifier authenticated through the certificate, e.g., because the Client Identifier is contained in a list of trusted Client Identifiers, it may allow the client to freely choose the `redirect_uri` value. If not, the `redirect_uri` value MUST match the Client Identifier without the prefix `x509_san_uri:`. Example Client Identifier: `x509_san_uri:https://client.example.org/cb`.
+* `x509_san_uri`: When the Client Identifier Scheme is `x509_san_uri`, the Client Identifier MUST be a URI and match a `uniformResourceIdentifier` Subject Alternative Name (SAN) {{RFC5280}} entry in the leaf certificate passed with the request. The request MUST be signed with the private key corresponding to the public key in the leaf X.509 certificate of the certificate chain added to the request in the `x5c` JOSE header {{RFC7515}} of the signed request object. The Authorization Server MUST validate the signature and the trust chain of the X.509 certificate. All Client metadata other than the public key MUST be obtained from the `client_metadata` parameter. If the Authorization Server can establish trust in the Client Identifier authenticated through the certificate, e.g., because the Client Identifier is contained in a list of trusted Client Identifiers, it may allow the client to freely choose the `redirect_uri` value. If not, the `redirect_uri` value MUST match the Client Identifier without the prefix `x509_san_uri:`. Example Client Identifier: `x509_san_uri:https://client.example.org/cb`.
 
 
 
