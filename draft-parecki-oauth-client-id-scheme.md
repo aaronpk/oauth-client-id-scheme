@@ -24,11 +24,10 @@ venue:
   latest: "https://drafts.aaronpk.com/oauth-client-id-scheme/draft-parecki-oauth-client-id-scheme.html"
 
 author:
- -
+  -
     fullname: "Aaron Parecki"
     organization: Okta
     email: "aaron@parecki.com"
-
   -
     fullname: "Daniel Fett"
     organization: Authlete
