@@ -95,7 +95,7 @@ This specification defines the concept of a Client Identifier Scheme that indica
 
 The Client Identifier Scheme is a string that MAY be communicated by the Client in a prefix within the `client_id` parameter in the Authorization Request. A fallback to pre-registered Clients as in {{RFC6749}} remains in place as a default mechanism in case no Client Identifier Scheme was provided. A certain Client Identifier Scheme may require the Client to sign the Authorization Request as means of authentication and/or pass additional parameters and require the Authorization Server to process them.
 
-### Syntax
+## Syntax
 
 In the `client_id` Authorization Request parameter and other places where the Client Identifier is used, the Client Identifier Schemes are prefixed to the usual Client Identifier, separated by a `:` (colon) character:
 
@@ -113,7 +113,7 @@ Note that the Client needs to determine which Client Identifier Schemes the Auth
 
 Depending on the Client Identifier Scheme, the Client can communicate a JSON object with its metadata using the `client_metadata` parameter which contains name/value pairs.
 
-### Fallback
+## Fallback
 
 If a `:` character is not present in the Client Identifier, the Authorization Server MUST treat the Client Identifier as referencing a pre-registered client. This is equivalent to the {{RFC6749}} default behavior, i.e., the Client Identifier needs to be known to the Authorization Server in advance of the Authorization Request. The Client metadata is obtained using {{RFC7591}} or through out-of-band mechanisms.
 
@@ -121,13 +121,13 @@ For example, if an Authorization Request contains `client_id=example-client`, th
 
 From this definition, it follows that pre-registered clients MUST NOT contain a `:` character in their Client Identifier.
 
-### Todo: Exception for Federation and Client ID Metadata by Aaron
+## Todo: Exception for Federation and Client ID Metadata by Aaron
 
-### Security Considerations
+## Security Considerations
 
 Confusing Clients using a Client Identifier Scheme with those using none can lead to attacks. Therefore, Authorization Servers MUST always use the full Client Identifier, including the prefix if provided, within the context of the Authorization Server or its responses to identify the client. This refers in particular to places where the Client Identifier is used in {{RFC6749}} and in the presentation returned to the Client.
 
-### Defined Client Identifier Schemes {#client_identifier_schemes}
+## Defined Client Identifier Schemes {#client_identifier_schemes}
 
 This specification defines the following Client Identifier Schemes, followed by the examples where applicable:
 
