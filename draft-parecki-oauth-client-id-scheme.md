@@ -36,10 +36,42 @@ author:
     email: "joseph@heenan.me.uk"
 
 normative:
-  - RFC6749:
+  RFC6749:
 
 informative:
-  - RFC7591:
+  RFC7591:
+  OpenID:
+    title: "OpenID Connect Core 1.0"
+    date: 2023-12-15
+    target: https://openid.net/specs/openid-connect-core-1_0.html
+    author:
+      - name: N. Sakimura
+        org: NAT.Consulting
+      - name: J. Bradley
+        org: Yubico
+      - name: M. Jones
+        org: Self-Issued Consulting
+      - name: B. de Medeiros
+        org: Google
+      - name: C. Mortimore
+        org: Disney
+  OpenID.Federation:
+    title: "OpenID Federation 1.0"
+    date: 2024-05-17
+    target: https://openid.net/specs/openid-federation-1_0.html
+    author:
+      - name: R. Hedberg
+        org: independent
+      - name: M.B. Jones
+        org: Self-Issued Consulting
+      - name: A.Å. Solberg
+        org: Sikt
+      - name: J. Bradley
+        org: Yubico
+      - name: G. De Marco
+        org: independent
+      - name: V. Dzhuvinov
+        org: Connect2id
 
 
 --- abstract
@@ -117,7 +149,7 @@ Location: https://client.example.org/universal-link?
   cryptosuite%22:%5B%22ecdsa-sd-2023%22%5D%7D%7D%7D
 ```
 
-* `federation`: This value indicates that the Client Identifier is an Entity Identifier defined in OpenID Federation [@!OpenID.Federation]. Since the Entity Identifier is already defined to start with `federation:`, this Client Identifier Scheme MUST NOT be prefixed additionally. Processing rules given in [@!OpenID.Federation] MUST be followed. Automatic Registration as defined in [@!OpenID.Federation] MUST be used. The Authorization Request MAY also contain a `trust_chain` parameter. The final Client metadata is obtained from the Trust Chain after applying the policies, according to [@!OpenID.Federation]. The `client_metadata` parameter, if present in the Authorization Request, MUST be ignored when this Client Identifier scheme is used. Example Client Identifier: `federation:https://federation-Client.example.com`.
+* `federation`: This value indicates that the Client Identifier is an Entity Identifier defined in OpenID Federation {{OpenID.Federation}}. Since the Entity Identifier is already defined to start with `federation:`, this Client Identifier Scheme MUST NOT be prefixed additionally. Processing rules given in {{OpenID.Federation}} MUST be followed. Automatic Registration as defined in {{OpenID.Federation}} MUST be used. The Authorization Request MAY also contain a `trust_chain` parameter. The final Client metadata is obtained from the Trust Chain after applying the policies, according to {{OpenID.Federation}}. The `client_metadata` parameter, if present in the Authorization Request, MUST be ignored when this Client Identifier scheme is used. Example Client Identifier: `federation:https://federation-Client.example.com`.
 
 * `did`: This value indicates that the Client Identifier is a DID defined in [@!DID-Core]. Since the DID URI is already defined to start with `did:`, this Client Identifier Scheme MUST NOT be prefixed additionally. The request MUST be signed with a private key associated with the DID. A public key to verify the signature MUST be obtained from the `verificationMethod` property of a DID Document. Since DID Document may include multiple public keys, a particular public key used to sign the request in question MUST be identified by the `kid` in the JOSE Header. To obtain the DID Document, the Authorization Server MUST use DID Resolution defined by the DID method used by the Client. All Client metadata other than the public key MUST be obtained from the `client_metadata` parameter as defined in (#new_parameters). Example Client Identifier: `did:example:123#1`.
 
