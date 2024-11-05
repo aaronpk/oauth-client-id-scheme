@@ -30,7 +30,6 @@ author:
     fullname: "Daniel Fett"
     organization: Authlete
     email: "mail@danielfett.de"
-
   -
     fullname: "Joseph Heenan"
     organization: Authlete
