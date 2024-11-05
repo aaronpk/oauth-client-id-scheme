@@ -12,9 +12,7 @@ v: 3
 area: "Security"
 workgroup: "Web Authorization Protocol"
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+ - oauth
 venue:
   group: "Web Authorization Protocol"
   type: "Working Group"
@@ -34,6 +32,7 @@ author:
     email: "mail@danielfett.de"
 
 normative:
+  - RFC6749:
 
 informative:
 
