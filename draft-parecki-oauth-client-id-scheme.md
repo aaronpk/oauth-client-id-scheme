@@ -39,6 +39,7 @@ normative:
   - RFC6749:
 
 informative:
+  - RFC7591:
 
 
 --- abstract
@@ -58,9 +59,9 @@ A Client Identifier is used by an OAuth 2.0 Client to identify itself to an Auth
 
 # Client Identifier Scheme
 
-This specification defines the concept of a Client Identifier Scheme that indicates how an Authorization Server is supposed to interpret the Client Identifier and associated data in the process of Client identification, authentication, and authorization. The Client Identifier Scheme enables deployments of this specification to use different mechanisms to obtain and validate metadata of the Client beyond the scope of [@!RFC6749].
+This specification defines the concept of a Client Identifier Scheme that indicates how an Authorization Server is supposed to interpret the Client Identifier and associated data in the process of Client identification, authentication, and authorization. The Client Identifier Scheme enables deployments of this specification to use different mechanisms to obtain and validate metadata of the Client beyond the scope of {{RFC6749}}.
 
-The Client Identifier Scheme is a string that MAY be communicated by the Client in a prefix within the `client_id` parameter in the Authorization Request. A fallback to pre-registered Clients as in [@!RFC6749] remains in place as a default mechanism in case no Client Identifier Scheme was provided. A certain Client Identifier Scheme may require the Client to sign the Authorization Request as means of authentication and/or pass additional parameters and require the Authorization Server to process them.
+The Client Identifier Scheme is a string that MAY be communicated by the Client in a prefix within the `client_id` parameter in the Authorization Request. A fallback to pre-registered Clients as in {{RFC6749}} remains in place as a default mechanism in case no Client Identifier Scheme was provided. A certain Client Identifier Scheme may require the Client to sign the Authorization Request as means of authentication and/or pass additional parameters and require the Authorization Server to process them.
 
 ### Syntax
 
@@ -82,7 +83,7 @@ Depending on the Client Identifier Scheme, the Client can communicate a JSON obj
 
 ### Fallback
 
-If a `:` character is not present in the Client Identifier, the Authorization Server MUST treat the Client Identifier as referencing a pre-registered client. This is equivalent to the [@!RFC6749] default behavior, i.e., the Client Identifier needs to be known to the Authorization Server in advance of the Authorization Request. The Client metadata is obtained using [@!RFC7591] or through out-of-band mechanisms.
+If a `:` character is not present in the Client Identifier, the Authorization Server MUST treat the Client Identifier as referencing a pre-registered client. This is equivalent to the {{RFC6749}} default behavior, i.e., the Client Identifier needs to be known to the Authorization Server in advance of the Authorization Request. The Client metadata is obtained using {{RFC7591}} or through out-of-band mechanisms.
 
 For example, if an Authorization Request contains `client_id=example-client`, the Authorization Server would interprete the Client Identifier as referring to a pre-registered client.
 
@@ -92,7 +93,7 @@ From this definition, it follows that pre-registered clients MUST NOT contain a 
 
 ### Security Considerations
 
-Confusing Clients using a Client Identifier Scheme with those using none can lead to attacks. Therefore, Authorization Servers MUST always use the full Client Identifier, including the prefix if provided, within the context of the Authorization Server or its responses to identify the client. This refers in particular to places where the Client Identifier is used in [@!RFC6749] and in the presentation returned to the Client.
+Confusing Clients using a Client Identifier Scheme with those using none can lead to attacks. Therefore, Authorization Servers MUST always use the full Client Identifier, including the prefix if provided, within the context of the Authorization Server or its responses to identify the client. This refers in particular to places where the Client Identifier is used in {{RFC6749}} and in the presentation returned to the Client.
 
 ### Defined Client Identifier Schemes {#client_identifier_schemes}
 
