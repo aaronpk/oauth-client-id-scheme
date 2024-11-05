@@ -29,6 +29,11 @@ author:
     organization: Your Organization Here
     email: "aaron@parecki.com"
 
+  -
+    fullname: "Daniel Fett"
+    organization: Authlete
+    email: "mail@danielfett.de"
+
 normative:
 
 informative:
