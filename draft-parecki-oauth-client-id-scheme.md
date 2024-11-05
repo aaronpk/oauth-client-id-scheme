@@ -3,7 +3,7 @@ title: "OAuth 2.0 Client ID Scheme"
 abbrev: "Client ID Scheme"
 category: info
 
-docname: draft-parecki-oauth-client-id-scheme
+docname: draft-parecki-oauth-client-id-scheme-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
