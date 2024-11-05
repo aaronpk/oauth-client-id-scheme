@@ -21,12 +21,12 @@ venue:
   mail: "oauth@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/oauth/"
   github: "aaronpk/oauth-client-id-scheme"
-  latest: "https://aaronpk.github.io/oauth-client-id-scheme/draft-parecki-oauth-client-id-scheme.html"
+  latest: "https://drafts.aaronpk.com/oauth-client-id-scheme/draft-parecki-oauth-client-id-scheme.html"
 
 author:
  -
     fullname: "Aaron Parecki"
-    organization: Your Organization Here
+    organization: Okta
     email: "aaron@parecki.com"
 
   -

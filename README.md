@@ -2,7 +2,7 @@
 
 This is the working area for the individual Internet-Draft, "OAuth 2.0 Client ID Scheme".
 
-* [Editor's Copy](https://aaronpk.github.io/oauth-client-id-scheme/#go.draft-parecki-oauth-client-id-scheme.html)
+* [Editor's Copy](https://drafts.aaronpk.com/oauth-client-id-scheme/#go.draft-parecki-oauth-client-id-scheme.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-parecki-oauth-client-id-scheme)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-parecki-oauth-client-id-scheme)
 * [Compare Editor's Copy to Individual Draft](https://aaronpk.github.io/oauth-client-id-scheme/#go.draft-parecki-oauth-client-id-scheme.diff)
