@@ -5,9 +5,9 @@
 Web Authorization Protocol                                    A. Parecki
 Internet-Draft                                                      Okta
 Intended status: Informational                                   D. Fett
-Expires: 10 May 2025                                           J. Heenan
+Expires: 10 August 2025                                        J. Heenan
                                                                 Authlete
-                                                         6 November 2024
+                                                         6 February 2025
 
 
                        OAuth 2.0 Client ID Scheme
@@ -52,11 +52,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 May 2025.
+   This Internet-Draft will expire on 10 August 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -75,7 +75,7 @@ Table of Contents
    3.  Client Identifier Scheme
      3.1.  Syntax
      3.2.  Pre-Registered Clients
-     3.3.  Pre-Existing Ecosystems using https
+     3.3.  https scheme
      3.4.  Defined Client Identifier Schemes
    4.  Example
    5.  Todo: Server Metadata
@@ -179,12 +179,14 @@ Table of Contents
    From this definition, it follows that pre-registered clients MUST NOT
    contain a : character in their Client Identifier.
 
-3.3.  Pre-Existing Ecosystems using https
+3.3.  https scheme
 
-   Existing deployments that use https URLs as client IDs and that have
-   only one way to resolve client metadata from the URL, MAY use full
-   https URL as the client ID.  If there is only one way to resolve
-   client metadata then there is no ambiguity.
+   Deployments that use https URLs as client IDs and that have only one
+   way to resolve client metadata from the URL, MAY use full https URL
+   as the client ID.  If there is only one way to resolve client
+   metadata then there is no ambiguity in which metadata retrieval
+   method to use, and are not susceptible to client identifier mixup
+   attacks Section 7.1.
 
    For example, an authorization server using only the Client ID
    Metadata Document
@@ -216,11 +218,9 @@ Table of Contents
       redirect_uri Authorization Request parameter.  Example Client
       Identifier: redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb.
 
-   *  federation: This value indicates that the Client Identifier is an
-      Entity Identifier defined in OpenID Federation
-      [OpenID.Federation].  Since the Entity Identifier is already
-      defined to start with federation:, this Client Identifier Scheme
-      MUST NOT be prefixed additionally.  Processing rules given in
+   *  openid_federation: This value indicates that the Client Identifier
+      is an Entity Identifier defined in OpenID Federation
+      [OpenID.Federation].  Processing rules given in
       [OpenID.Federation] MUST be followed.  Automatic Registration as
       defined in [OpenID.Federation] MUST be used.  The Authorization
       Request MAY also contain a trust_chain parameter.  The final
@@ -228,18 +228,16 @@ Table of Contents
       the policies, according to [OpenID.Federation].  Example Client
       Identifier: federation:https://federation-client.example.com.
 
-   *  did: This value indicates that the Client Identifier is a DID
-      defined in [DID-Core].  Since the DID URI is already defined to
-      start with did:, this Client Identifier Scheme MUST NOT be
-      prefixed additionally.  The request MUST be signed with a private
-      key associated with the DID.  A public key to verify the signature
-      MUST be obtained from the verificationMethod property of a DID
-      Document.  Since DID Document may include multiple public keys, a
-      particular public key used to sign the request in question MUST be
-      identified by the kid in the JOSE Header.  To obtain the DID
-      Document, the Authorization Server MUST use DID Resolution defined
-      by the DID method used by the Client.  Example Client Identifier:
-      did:example:123#1.
+   *  decentralized-identifier: This value indicates that the Client
+      Identifier is a DID defined in [DID-Core].  The request MUST be
+      signed with a private key associated with the DID.  A public key
+      to verify the signature MUST be obtained from the
+      verificationMethod property of a DID Document.  Since DID Document
+      may include multiple public keys, a particular public key used to
+      sign the request in question MUST be identified by the kid in the
+      JOSE Header.  To obtain the DID Document, the Authorization Server
+      MUST use DID Resolution defined by the DID method used by the
+      Client.  Example Client Identifier: did:example:123#1.
 
    *  client_attestation: This Client Identifier Scheme allows the
       Client to authenticate using a JWT that is bound to a certain
@@ -323,10 +321,10 @@ Table of Contents
 7.1.  Client Identifier Mixups
 
    Confusing Clients using a Client Identifier Scheme with those using
-   none can lead to attacks.  Therefore, Authorization Servers MUST
-   always use the full Client Identifier, including the prefix if
-   provided, within the context of the Authorization Server or its
-   responses to identify the client.  This refers in particular to
+   none can lead to various mixup attacks.  Therefore, Authorization
+   Servers MUST always use the full Client Identifier, including the
+   prefix if provided, within the context of the Authorization Server or
+   its responses to identify the client.  This refers in particular to
    places where the Client Identifier is used in [RFC6749] as well as in
    any artifacts such as the aud claim of JWT access tokens [RFC9068].
 
@@ -375,9 +373,9 @@ Table of Contents
    [I-D.draft-parecki-oauth-client-id-metadata-document]
               Parecki, A. and E. Smith, "OAuth Client ID Metadata
               Document", Work in Progress, Internet-Draft, draft-
-              parecki-oauth-client-id-metadata-document-01, 8 July 2024,
-              <https://datatracker.ietf.org/doc/html/draft-parecki-
-              oauth-client-id-metadata-document-01>.
+              parecki-oauth-client-id-metadata-document-02, 9 January
+              2025, <https://datatracker.ietf.org/doc/html/draft-
+              parecki-oauth-client-id-metadata-document-02>.
 
    [OpenID]   Sakimura, N., Bradley, J., Jones, M., Medeiros, B. de.,
               and C. Mortimore, "OpenID Connect Core 1.0", 15 December
