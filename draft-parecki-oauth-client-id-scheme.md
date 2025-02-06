@@ -127,9 +127,9 @@ For example, if an Authorization Request contains `client_id=example-client`, th
 From this definition, it follows that pre-registered clients MUST NOT contain a `:` character in their Client Identifier.
 
 
-## Pre-Existing Ecosystems using https
+## https scheme
 
-Existing deployments that use `https` URLs as client IDs and that have only one way to resolve client metadata from the URL, MAY use full https URL as the client ID. If there is only one way to resolve client metadata then there is no ambiguity.
+Deployments that use `https` URLs as client IDs and that have only one way to resolve client metadata from the URL, MAY use full https URL as the client ID. If there is only one way to resolve client metadata then there is no ambiguity in which metadata retrieval method to use, and are not susceptible to client identifier mixup attacks {{client-id-mixups}}.
 
 For example, an authorization server using only the Client ID Metadata Document {{I-D.draft-parecki-oauth-client-id-metadata-document}} method to retrieve client metadata MAY accept client IDs such as:
 
@@ -186,9 +186,9 @@ e.g., a `client_id_schemes_supported` parameter in the Server Metadata and a `cl
 
 # Security Considerations
 
-## Client Identifier Mixups
+## Client Identifier Mixups {#client-id-mixups}
 
-Confusing Clients using a Client Identifier Scheme with those using none can lead to attacks. Therefore, Authorization Servers MUST always use the full Client Identifier, including the prefix if provided, within the context of the Authorization Server or its responses to identify the client. This refers in particular to places where the Client Identifier is used in {{RFC6749}} as well as in any artifacts such as the `aud` claim of JWT access tokens {{RFC9068}}.
+Confusing Clients using a Client Identifier Scheme with those using none can lead to various mixup attacks. Therefore, Authorization Servers MUST always use the full Client Identifier, including the prefix if provided, within the context of the Authorization Server or its responses to identify the client. This refers in particular to places where the Client Identifier is used in {{RFC6749}} as well as in any artifacts such as the `aud` claim of JWT access tokens {{RFC9068}}.
 
 
 
