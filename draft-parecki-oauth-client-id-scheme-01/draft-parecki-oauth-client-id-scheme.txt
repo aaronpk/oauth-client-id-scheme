@@ -1,0 +1,437 @@
+
+
+
+
+Web Authorization Protocol                                    A. Parecki
+Internet-Draft                                                      Okta
+Intended status: Informational                                   D. Fett
+Expires: 11 August 2025                                        J. Heenan
+                                                                Authlete
+                                                         7 February 2025
+
+
+                       OAuth 2.0 Client ID Scheme
+              draft-parecki-oauth-client-id-scheme-latest
+
+Abstract
+
+   This specification defines the concept of a Client Identifier Scheme
+   to enable Authorization Servers and Clients to use more than one
+   mechanism to obtain and validate Client metadata.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://drafts.aaronpk.com/oauth-client-id-scheme/draft-parecki-
+   oauth-client-id-scheme.html.  Status information for this document
+   may be found at https://datatracker.ietf.org/doc/draft-parecki-oauth-
+   client-id-scheme/.
+
+   Discussion of this document takes place on the Web Authorization
+   Protocol Working Group mailing list (mailto:oauth@ietf.org), which is
+   archived at https://mailarchive.ietf.org/arch/browse/oauth/.
+   Subscribe at https://www.ietf.org/mailman/listinfo/oauth/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/aaronpk/oauth-client-id-scheme.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 11 August 2025.
+
+Copyright Notice
+
+   Copyright (c) 2025 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+   2.  Conventions and Definitions
+   3.  Client Identifier Scheme
+     3.1.  Syntax
+     3.2.  Pre-Registered Clients
+     3.3.  https scheme
+     3.4.  Defined Client Identifier Schemes
+   4.  Example
+   5.  Authorization Server Metadata
+   6.  Security Considerations
+     6.1.  Client Identifier Mixups
+   7.  IANA Considerations
+     7.1.  OAuth Authorization Server Metadata Registry
+   8.  References
+     8.1.  Normative References
+     8.2.  Informative References
+   Acknowledgments
+   Authors' Addresses
+
+1.  Introduction
+
+   A Client Identifier is used by an OAuth 2.0 Client to identify itself
+   to an Authorization Server.  The Client Identifier is used in the
+   Authorization Request and various other places throughout OAuth
+   flows.  In ecosystems where more than one method of obtaining and
+   validating Client metadata is used, it is necessary to indicate
+   unambiguously which method is used.  This specification defines a
+   structure for Client Identifiers that includes a prefix indicating
+   the Client Identifier Scheme.
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  Client Identifier Scheme
+
+   This specification defines the concept of a Client Identifier Scheme
+   that indicates how an Authorization Server is supposed to interpret
+   the Client Identifier and associated data in the process of Client
+   identification, authentication, and authorization.  The Client
+   Identifier Scheme enables deployments of this specification to use
+   different mechanisms to obtain and validate metadata of the Client
+   beyond the scope of [RFC6749].
+
+   The Client Identifier Scheme is a string that MAY be communicated by
+   the Client in a prefix within the client_id parameter in the
+   Authorization Request.  A fallback to pre-registered Clients as in
+   [RFC6749] remains in place as a default mechanism in case no Client
+   Identifier Scheme was provided.  A certain Client Identifier Scheme
+   may require the Client to sign the Authorization Request as means of
+   authentication and/or pass additional parameters and require the
+   Authorization Server to process them.
+
+3.1.  Syntax
+
+   In the client_id Authorization Request parameter and other places
+   where the Client Identifier is used, the Client Identifier Schemes
+   are prefixed to the usual Client Identifier, separated by a : (colon)
+   character:
+
+   <client_id_scheme>:<orig_client_id>
+
+   Here, <client_id_scheme> is the Client Identifier Scheme and
+   <orig_client_id> is an identifier for the Client within the namespace
+   of that scheme.  See Section 3.4 for Client Identifier Schemes
+   defined by this specification.
+
+   Authorization Servers MUST use the presence of a : (colon) character
+   to determine whether a Client Identifier Scheme is used.  If a :
+   character is present, the Authorization Server MUST interpret the
+   Client Identifier according to the Client Identifier Scheme, here
+   defined as the string before the (first) : character.  If the
+   Authorization Server does not support the Client Identifier Scheme,
+   the Authorization Server MUST refuse the request.
+
+   For example, an Authorization Request might contain
+   client_id=client_attestation:example-client to indicate that the
+   client_attestation Client Identifier Scheme is to be used and that
+   within this scheme, the Client can be identified by the string
+   example-client.  The presentation would contain the full
+   client_attestation:example-client string as the audience (intended
+   receiver) and the same full string would be used as the Client
+   Identifier anywhere in the OAuth flow.
+
+   Note that the Client needs to determine which Client Identifier
+   Schemes the Authorization Server supports prior to sending the
+   Authorization Request in order to choose a supported scheme.
+
+3.2.  Pre-Registered Clients
+
+   If a : character is not present in the Client Identifier, the
+   Authorization Server MUST treat the Client Identifier as referencing
+   a pre-registered client.  This is equivalent to the [RFC6749] default
+   behavior, i.e., the Client Identifier needs to be known to the
+   Authorization Server in advance of the Authorization Request.  The
+   Client metadata is pre-registered using [RFC7591] or through out-of-
+   band mechanisms.
+
+   For example, if an Authorization Request contains client_id=example-
+   client, the Authorization Server would interprete the Client
+   Identifier as referring to a pre-registered client.
+
+   From this definition, it follows that pre-registered clients MUST NOT
+   contain a : character in their Client Identifier.
+
+3.3.  https scheme
+
+   Deployments that use https URLs as client IDs and that have only one
+   way to resolve client metadata from the URL, MAY use full https URL
+   as the client ID.  If there is only one way to resolve client
+   metadata then there is no ambiguity in which metadata retrieval
+   method to use, and are not susceptible to client identifier mixup
+   attacks as described in Section 6.1.
+
+   For example, an authorization server using only the Client ID
+   Metadata Document
+   [I-D.draft-parecki-oauth-client-id-metadata-document] method to
+   retrieve client metadata MAY accept client IDs such as:
+
+   https://client.example.com/metadata.json
+
+   This results in this non-normative example of an authorization
+   request:
+
+   GET /authorize?
+     response_type=code
+     &client_id=https%3A%2F%2Fclient.example.org%2Fmetadata.json
+     &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcallback
+     &code_challenge=GdE4nqBrwRxQfN2Y8fq3rrYk_kkpwg6tQ74J94-2nHw
+     &code_challenge_method=S256
+     &scope=write
+
+3.4.  Defined Client Identifier Schemes
+
+   This specification defines the following Client Identifier Schemes,
+   followed by the examples where applicable:
+
+   *  redirect_uri: This value indicates that the Client Identifier
+      (without the prefix redirect_uri:) is the Client's Redirect URI
+      (or Response URI when Response Mode direct_post is used).  The
+      Authorization Request MUST NOT be signed.  The Client MAY omit the
+      redirect_uri Authorization Request parameter.  Example Client
+      Identifier: redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb.
+
+   *  openid_federation: This value indicates that the Client Identifier
+      is an Entity Identifier defined in OpenID Federation
+      [OpenID.Federation].  Processing rules given in
+      [OpenID.Federation] MUST be followed.  Automatic Registration as
+      defined in [OpenID.Federation] MUST be used.  The Authorization
+      Request MAY also contain a trust_chain parameter.  The final
+      Client metadata is obtained from the Trust Chain after applying
+      the policies, according to [OpenID.Federation].  Example Client
+      Identifier: federation:https://federation-client.example.com.
+
+   *  decentralized-identifier: This value indicates that the Client
+      Identifier is a DID defined in [DID-Core].  The request MUST be
+      signed with a private key associated with the DID.  A public key
+      to verify the signature MUST be obtained from the
+      verificationMethod property of a DID Document.  Since DID Document
+      may include multiple public keys, a particular public key used to
+      sign the request in question MUST be identified by the kid in the
+      JOSE Header.  To obtain the DID Document, the Authorization Server
+      MUST use DID Resolution defined by the DID method used by the
+      Client.  Example Client Identifier: did:example:123#1.
+
+   *  client_attestation: This Client Identifier Scheme allows the
+      Client to authenticate using a JWT that is bound to a certain
+      public key as defined in (OpenID4VP: Client Attestation).  When
+      the Client Identifier Scheme is client_attestation, the Client
+      Identifier MUST equal the sub claim value in the Client
+      attestation JWT.  The request MUST be signed with the private key
+      corresponding to the public key in the cnf claim in the Client
+      attestation JWT.  This serves as proof of possesion of this key.
+      The Client attestation JWT MUST be added to the jwt JOSE Header of
+      the request object (see (OpenID4VP: Client Attestation)).  The
+      Authorization Server MUST validate the signature on the Client
+      attestation JWT.  The iss claim value of the Client Attestation
+      JWT MUST identify a party the Authorization Server trusts for
+      issuing Client Attestation JWTs.  If the Authorization Server
+      cannot establish trust, it MUST refuse the request.  If the issuer
+      of the Client Attestation JWT adds a redirect_uris claim to the
+      attestation, the Authorization Server MUST ensure the redirect_uri
+      request parameter value exactly matches one of the redirect_uris
+      claim entries.  Example Client Identifier:
+      client_attestation:client.example.
+
+   *  x509_san_dns: When the Client Identifier Scheme is x509_san_dns,
+      the Client Identifier MUST be a DNS name and match a dNSName
+      Subject Alternative Name (SAN) [RFC5280] entry in the leaf
+      certificate passed with the request.  The request MUST be signed
+      with the private key corresponding to the public key in the leaf
+      X.509 certificate of the certificate chain added to the request in
+      the x5c JOSE header [RFC7515] of the signed request object.  The
+      Authorization Server MUST validate the signature and the trust
+      chain of the X.509 certificate.  If the Authorization Server can
+      establish trust in the Client Identifier authenticated through the
+      certificate, e.g. because the Client Identifier is contained in a
+      list of trusted Client Identifiers, it may allow the client to
+      freely choose the redirect_uri value.  If not, the FQDN of the
+      redirect_uri value MUST match the Client Identifier without the
+      prefix x509_san_dns:. Example Client Identifier:
+      x509_san_dns:client.example.org.
+
+   *  x509_san_uri: When the Client Identifier Scheme is x509_san_uri,
+      the Client Identifier MUST be a URI and match a
+      uniformResourceIdentifier Subject Alternative Name (SAN) [RFC5280]
+      entry in the leaf certificate passed with the request.  The
+      request MUST be signed with the private key corresponding to the
+      public key in the leaf X.509 certificate of the certificate chain
+      added to the request in the x5c JOSE header [RFC7515] of the
+      signed request object.  The Authorization Server MUST validate the
+      signature and the trust chain of the X.509 certificate.  If the
+      Authorization Server can establish trust in the Client Identifier
+      authenticated through the certificate, e.g., because the Client
+      Identifier is contained in a list of trusted Client Identifiers,
+      it may allow the client to freely choose the redirect_uri value.
+      If not, the redirect_uri value MUST match the Client Identifier
+      without the prefix x509_san_uri:. Example Client Identifier:
+      x509_san_uri:https://client.example.org/cb.
+
+   *  https: This Client Identifier Scheme MUST NOT be registered.
+
+4.  Example
+
+   The following is a non-normative example of an authorization request
+   with the redirect_uri Client ID Scheme:
+
+   GET /authorize?
+     response_type=code
+     &client_id=redirect_uri:https%3A%2F%2Fclient.example.org%2Fcb
+     &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+     &code_challenge=GdE4nqBrwRxQfN2Y8fq3rrYk_kkpwg6tQ74J94-2nHw
+     &code_challenge_method=S256
+     &scope=write
+
+5.  Authorization Server Metadata
+
+   Authorization servers that publish Authorization Server Metadata
+   ([RFC8414]) MUST include the following properties to indicate support
+   for client ID schemes as described in this specification.
+
+   client_id_schemes_supported:  REQUIRED.  A JSON array of strings
+      indicating the clients ID schemes supported by this authorization
+      server.
+
+6.  Security Considerations
+
+6.1.  Client Identifier Mixups
+
+   Confusing Clients using a Client Identifier Scheme with those using
+   none can lead to various mixup attacks.  Therefore, Authorization
+   Servers MUST always use the full Client Identifier, including the
+   prefix if provided, within the context of the Authorization Server or
+   its responses to identify the client.  This refers in particular to
+   places where the Client Identifier is used in [RFC6749] as well as in
+   any artifacts such as the aud claim of JWT access tokens [RFC9068].
+
+7.  IANA Considerations
+
+7.1.  OAuth Authorization Server Metadata Registry
+
+   The following authorization server metadata value is defined by this
+   specification and (TBD) registered in the IANA "OAuth Authorization
+   Server Metadata" registry established in OAuth 2.0 Authorization
+   Server Metadata [RFC8414].
+
+   *  Metadata Name: client_id_schemes_supported:
+
+   *  Metadata Description: A JSON array of strings indicating the
+      client ID schemes supported by the authorization server.
+
+   *  Change Controller: IETF
+
+   *  Specification Document: Section 5 of [[ this specification ]]
+
+8.  References
+
+8.1.  Normative References
+
+   [DID-Core] "DID Core", 19 July 2022,
+              <https://www.w3.org/TR/did-core/>.
+
+   [OpenID.Federation]
+              Hedberg, R., Jones, M.B., Solberg, A.Å., Bradley, J.,
+              Marco, G. D., and V. Dzhuvinov, "OpenID Federation 1.0",
+              17 May 2024,
+              <https://openid.net/specs/openid-federation-1_0.html>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
+              Housley, R., and W. Polk, "Internet X.509 Public Key
+              Infrastructure Certificate and Certificate Revocation List
+              (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
+              <https://www.rfc-editor.org/rfc/rfc5280>.
+
+   [RFC6749]  Hardt, D., Ed., "The OAuth 2.0 Authorization Framework",
+              RFC 6749, DOI 10.17487/RFC6749, October 2012,
+              <https://www.rfc-editor.org/rfc/rfc6749>.
+
+   [RFC7515]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web
+              Signature (JWS)", RFC 7515, DOI 10.17487/RFC7515, May
+              2015, <https://www.rfc-editor.org/rfc/rfc7515>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8414]  Jones, M., Sakimura, N., and J. Bradley, "OAuth 2.0
+              Authorization Server Metadata", RFC 8414,
+              DOI 10.17487/RFC8414, June 2018,
+              <https://www.rfc-editor.org/rfc/rfc8414>.
+
+8.2.  Informative References
+
+   [I-D.draft-parecki-oauth-client-id-metadata-document]
+              Parecki, A. and E. Smith, "OAuth Client ID Metadata
+              Document", Work in Progress, Internet-Draft, draft-
+              parecki-oauth-client-id-metadata-document-02, 9 January
+              2025, <https://datatracker.ietf.org/doc/html/draft-
+              parecki-oauth-client-id-metadata-document-02>.
+
+   [OpenID]   Sakimura, N., Bradley, J., Jones, M., Medeiros, B. de.,
+              and C. Mortimore, "OpenID Connect Core 1.0", 15 December
+              2023,
+              <https://openid.net/specs/openid-connect-core-1_0.html>.
+
+   [RFC7591]  Richer, J., Ed., Jones, M., Bradley, J., Machulak, M., and
+              P. Hunt, "OAuth 2.0 Dynamic Client Registration Protocol",
+              RFC 7591, DOI 10.17487/RFC7591, July 2015,
+              <https://www.rfc-editor.org/rfc/rfc7591>.
+
+   [RFC9068]  Bertocci, V., "JSON Web Token (JWT) Profile for OAuth 2.0
+              Access Tokens", RFC 9068, DOI 10.17487/RFC9068, October
+              2021, <https://www.rfc-editor.org/rfc/rfc9068>.
+
+Acknowledgments
+
+   The authors would like to thank the following people for their
+   contributions and reviews of this specification:
+
+   Brian Campbell, Emelia Smith.
+
+Authors' Addresses
+
+   Aaron Parecki
+   Okta
+   Email: aaron@parecki.com
+
+
+   Daniel Fett
+   Authlete
+   Email: mail@danielfett.de
+
+
+   Joseph Heenan
+   Authlete
+   Email: joseph@heenan.me.uk
