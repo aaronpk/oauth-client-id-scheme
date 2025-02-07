@@ -39,6 +39,7 @@ normative:
   RFC6749:
   RFC5280:
   RFC7515:
+  RFC8414:
   DID-Core:
     title: "DID Core"
     target: https://www.w3.org/TR/did-core/
@@ -197,7 +198,7 @@ Confusing Clients using a Client Identifier Scheme with those using none can lea
 
 ## OAuth Authorization Server Metadata Registry
 
-The following authorization server metadata value is defined by this specification and registered in the IANA "OAuth Authorization Server Metadata" registry established in OAuth 2.0 Authorization Server Metadata [RFC8414].
+The following authorization server metadata value is defined by this specification and registered in the IANA "OAuth Authorization Server Metadata" registry established in OAuth 2.0 Authorization Server Metadata {{RFC8414}}.
 
 * Metadata Name: `client_id_schemes_supported`:
 * Metadata Description: A JSON array of strings indicating the client ID schemes supported by the authorization server.
