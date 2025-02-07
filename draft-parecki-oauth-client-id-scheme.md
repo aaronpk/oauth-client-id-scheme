@@ -177,11 +177,12 @@ The following is a non-normative example of an authorization request with the `r
       &code_challenge_method=S256
       &scope=write
 
-# Todo: Server Metadata
+# Authorization Server Metadata {#as-metadata}
 
-e.g., a `client_id_schemes_supported` parameter in the Server Metadata and a `client_id_scheme_default` parameter.
+Authorization servers that publish Authorization Server Metadata ({{RFC8414}}) MUST include the following properties to indicate support for client ID schemes as described in this specification.
 
-# Todo: Registry
+`client_id_schemes_supported`:
+: REQUIRED. A JSON array of strings indicating the clients ID schemes supported by this authorization server.
 
 
 # Security Considerations
@@ -194,7 +195,14 @@ Confusing Clients using a Client Identifier Scheme with those using none can lea
 
 # IANA Considerations
 
-This document has no IANA actions.
+## OAuth Authorization Server Metadata Registry
+
+The following authorization server metadata value is defined by this specification and registered in the IANA "OAuth Authorization Server Metadata" registry established in OAuth 2.0 Authorization Server Metadata [RFC8414].
+
+* Metadata Name: `client_id_schemes_supported`:
+* Metadata Description: A JSON array of strings indicating the client ID schemes supported by the authorization server.
+* Change Controller: IETF
+* Specification Document: {{as-metadata}} of {{&SELF}}
 
 
 --- back
