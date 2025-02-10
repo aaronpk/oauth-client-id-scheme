@@ -114,7 +114,7 @@ Here, `<client_id_scheme>` is the Client Identifier Scheme and `<orig_client_id>
 
 Authorization Servers MUST use the presence of a `:` (colon) character to determine whether a Client Identifier Scheme is used. If a `:` character is present, the Authorization Server MUST interpret the Client Identifier according to the Client Identifier Scheme, here defined as the string before the (first) `:` character. If the Authorization Server does not support the Client Identifier Scheme, the Authorization Server MUST refuse the request.
 
-For example, an Authorization Request might contain `client_id=client_attestation:example-client` to indicate that the `client_attestation` Client Identifier Scheme is to be used and that within this scheme, the Client can be identified by the string `example-client`. The presentation would contain the full `client_attestation:example-client` string as the audience (intended receiver) and the same full string would be used as the Client Identifier anywhere in the OAuth flow.
+For example, an Authorization Request might contain `client_id=client_attestation:example-client` to indicate that the `client_attestation` Client Identifier Scheme is to be used and that within this scheme, the Client can be identified by the string `example-client`. The same full string `client_attestation:example-client` would be used as the Client Identifier anywhere in the OAuth flow.
 
 Note that the Client needs to determine which Client Identifier Schemes the Authorization Server supports prior to sending the Authorization Request in order to choose a supported scheme.
 
@@ -214,6 +214,6 @@ The following authorization server metadata value is defined by this specificati
 The authors would like to thank the following people for their contributions and
 reviews of this specification:
 
-Brian Campbell, Emelia Smith.
+Brian Campbell, Emelia Smith, Tim Würtele.
 
 
