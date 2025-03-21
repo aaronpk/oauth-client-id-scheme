@@ -5,17 +5,17 @@
 Web Authorization Protocol                                    A. Parecki
 Internet-Draft                                                      Okta
 Intended status: Informational                                   D. Fett
-Expires: 11 August 2025                                        J. Heenan
+Expires: 22 September 2025                                     J. Heenan
                                                                 Authlete
-                                                         7 February 2025
+                                                           21 March 2025
 
 
-                       OAuth 2.0 Client ID Scheme
-              draft-parecki-oauth-client-id-scheme-latest
+                       OAuth 2.0 Client ID Prefix
+              draft-parecki-oauth-client-id-prefix-latest
 
 Abstract
 
-   This specification defines the concept of a Client Identifier Scheme
+   This specification defines the concept of a Client Identifier Prefix
    to enable Authorization Servers and Clients to use more than one
    mechanism to obtain and validate Client metadata.
 
@@ -24,10 +24,10 @@ About This Document
    This note is to be removed before publishing as an RFC.
 
    The latest revision of this draft can be found at
-   https://drafts.aaronpk.com/oauth-client-id-scheme/draft-parecki-
-   oauth-client-id-scheme.html.  Status information for this document
+   https://drafts.aaronpk.com/oauth-client-id-prefix/draft-parecki-
+   oauth-client-id-prefix.html.  Status information for this document
    may be found at https://datatracker.ietf.org/doc/draft-parecki-oauth-
-   client-id-scheme/.
+   client-id-prefix/.
 
    Discussion of this document takes place on the Web Authorization
    Protocol Working Group mailing list (mailto:oauth@ietf.org), which is
@@ -35,7 +35,7 @@ About This Document
    Subscribe at https://www.ietf.org/mailman/listinfo/oauth/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/aaronpk/oauth-client-id-scheme.
+   https://github.com/aaronpk/oauth-client-id-prefix.
 
 Status of This Memo
 
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 August 2025.
+   This Internet-Draft will expire on 22 September 2025.
 
 Copyright Notice
 
@@ -72,11 +72,11 @@ Table of Contents
 
    1.  Introduction
    2.  Conventions and Definitions
-   3.  Client Identifier Scheme
+   3.  Client Identifier Prefix
      3.1.  Syntax
-     3.2.  Pre-Registered Clients
-     3.3.  https scheme
-     3.4.  Defined Client Identifier Schemes
+     3.2.  Fallback for Unrecognized Client ID Prefixes
+       3.2.1.  Example
+     3.3.  Defined Client Identifier Prefixes
    4.  Example
    5.  Authorization Server Metadata
    6.  Security Considerations
@@ -98,7 +98,7 @@ Table of Contents
    validating Client metadata is used, it is necessary to indicate
    unambiguously which method is used.  This specification defines a
    structure for Client Identifiers that includes a prefix indicating
-   the Client Identifier Scheme.
+   the Client Identifier Prefix.
 
 2.  Conventions and Definitions
 
@@ -108,61 +108,64 @@ Table of Contents
    BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-3.  Client Identifier Scheme
+3.  Client Identifier Prefix
 
-   This specification defines the concept of a Client Identifier Scheme
+   This specification defines the concept of a Client Identifier Prefix
    that indicates how an Authorization Server is supposed to interpret
    the Client Identifier and associated data in the process of Client
    identification, authentication, and authorization.  The Client
-   Identifier Scheme enables deployments of this specification to use
+   Identifier Prefix enables deployments of this specification to use
    different mechanisms to obtain and validate metadata of the Client
    beyond the scope of [RFC6749].
 
-   The Client Identifier Scheme is a string that MAY be communicated by
+   The Client Identifier Prefix is a string that MAY be communicated by
    the Client in a prefix within the client_id parameter in the
    Authorization Request.  A fallback to pre-registered Clients as in
-   [RFC6749] remains in place as a default mechanism in case no Client
-   Identifier Scheme was provided.  A certain Client Identifier Scheme
-   may require the Client to sign the Authorization Request as means of
-   authentication and/or pass additional parameters and require the
-   Authorization Server to process them.
+   [RFC6749] or a default Client Identifier Prefix is in place as a
+   default mechanism in case no Client Identifier Prefix was provided.
+   A certain Client Identifier Prefix may require the Client to sign the
+   Authorization Request as means of authentication and/or pass
+   additional parameters and require the Authorization Server to process
+   them.
 
 3.1.  Syntax
 
    In the client_id Authorization Request parameter and other places
-   where the Client Identifier is used, the Client Identifier Schemes
+   where the Client Identifier is used, the Client Identifier Prefixes
    are prefixed to the usual Client Identifier, separated by a : (colon)
    character:
 
-   <client_id_scheme>:<orig_client_id>
+   <client_id_prefix>:<orig_client_id>
 
-   Here, <client_id_scheme> is the Client Identifier Scheme and
+   Here, <client_id_prefix> is the Client Identifier Prefix and
    <orig_client_id> is an identifier for the Client within the namespace
-   of that scheme.  See Section 3.4 for Client Identifier Schemes
+   of that prefix.  See Section 3.3 for Client Identifier Prefixes
    defined by this specification.
 
    Authorization Servers MUST use the presence of a : (colon) character
-   to determine whether a Client Identifier Scheme is used.  If a :
-   character is present, the Authorization Server MUST interpret the
-   Client Identifier according to the Client Identifier Scheme, here
-   defined as the string before the (first) : character.  If the
-   Authorization Server does not support the Client Identifier Scheme,
-   the Authorization Server MUST refuse the request.
+   and the content preceding it to determine whether a Client Identifier
+   Prefix is used.  If a : character is present, and the content
+   preceding it is a recognized and supported Client Identifier Prefix
+   value, the Authorization Server MUST interpret the Client Identifier
+   according to the given Client Identifier Prefix.  The Client
+   Identifier Prefix is defined as the string before the (first) :
+   character.  If the Authorization Server does not support the Client
+   Identifier Prefix, the Authorization Server MUST refuse the request.
 
    For example, an Authorization Request might contain
    client_id=client_attestation:example-client to indicate that the
-   client_attestation Client Identifier Scheme is to be used and that
-   within this scheme, the Client can be identified by the string
+   client_attestation Client Identifier Prefix is to be used and that
+   within this prefix, the Client can be identified by the string
    example-client.  The presentation would contain the full
    client_attestation:example-client string as the audience (intended
    receiver) and the same full string would be used as the Client
    Identifier anywhere in the OAuth flow.
 
    Note that the Client needs to determine which Client Identifier
-   Schemes the Authorization Server supports prior to sending the
-   Authorization Request in order to choose a supported scheme.
+   Prefixes the Authorization Server supports prior to sending the
+   Authorization Request in order to choose a supported prefix.
 
-3.2.  Pre-Registered Clients
+3.2.  Fallback for Unrecognized Client ID Prefixes
 
    If a : character is not present in the Client Identifier, the
    Authorization Server MUST treat the Client Identifier as referencing
@@ -173,13 +176,25 @@ Table of Contents
    band mechanisms.
 
    For example, if an Authorization Request contains client_id=example-
-   client, the Authorization Server would interprete the Client
+   client, the Authorization Server would interpret the Client
    Identifier as referring to a pre-registered client.
 
-   From this definition, it follows that pre-registered clients MUST NOT
-   contain a : character in their Client Identifier.
+   If a : character is present in the Client Identifier but the value
+   preceding it is not a recognized and supported Client Identifier
+   Prefix value, the Authorization Server MAY treat the Client
+   Identifier as having a default Client Identifier Prefix.
 
-3.3.  https scheme
+   For example, an Authorization Request containing a client_id value of
+   https://client.example.com/metadata.json could be interpreted by the
+   Authorization Server as referring to a Client ID Metadata Document
+   [I-D.draft-parecki-oauth-client-id-metadata-document], with the
+   default Client Identifier Prefix being client-id-metadata-document.
+
+   From this definition, it follows that pre-registered clients MUST NOT
+   contain a : character preceded immediately by a supported Client
+   Identifier Prefix value in the first part of their Client Identifier.
+
+3.2.1.  Example
 
    Deployments that use https URLs as client IDs and that have only one
    way to resolve client metadata from the URL, MAY use full https URL
@@ -206,9 +221,9 @@ Table of Contents
      &code_challenge_method=S256
      &scope=write
 
-3.4.  Defined Client Identifier Schemes
+3.3.  Defined Client Identifier Prefixes
 
-   This specification defines the following Client Identifier Schemes,
+   This specification defines the following Client Identifier Prefixes,
    followed by the examples where applicable:
 
    *  redirect_uri: This value indicates that the Client Identifier
@@ -239,10 +254,10 @@ Table of Contents
       MUST use DID Resolution defined by the DID method used by the
       Client.  Example Client Identifier: did:example:123#1.
 
-   *  client_attestation: This Client Identifier Scheme allows the
+   *  client_attestation: This Client Identifier Prefix allows the
       Client to authenticate using a JWT that is bound to a certain
       public key as defined in (OpenID4VP: Client Attestation).  When
-      the Client Identifier Scheme is client_attestation, the Client
+      the Client Identifier Prefix is client_attestation, the Client
       Identifier MUST equal the sub claim value in the Client
       attestation JWT.  The request MUST be signed with the private key
       corresponding to the public key in the cnf claim in the Client
@@ -260,7 +275,7 @@ Table of Contents
       claim entries.  Example Client Identifier:
       client_attestation:client.example.
 
-   *  x509_san_dns: When the Client Identifier Scheme is x509_san_dns,
+   *  x509_san_dns: When the Client Identifier Prefix is x509_san_dns,
       the Client Identifier MUST be a DNS name and match a dNSName
       Subject Alternative Name (SAN) [RFC5280] entry in the leaf
       certificate passed with the request.  The request MUST be signed
@@ -277,29 +292,25 @@ Table of Contents
       prefix x509_san_dns:. Example Client Identifier:
       x509_san_dns:client.example.org.
 
-   *  x509_san_uri: When the Client Identifier Scheme is x509_san_uri,
-      the Client Identifier MUST be a URI and match a
-      uniformResourceIdentifier Subject Alternative Name (SAN) [RFC5280]
-      entry in the leaf certificate passed with the request.  The
-      request MUST be signed with the private key corresponding to the
-      public key in the leaf X.509 certificate of the certificate chain
-      added to the request in the x5c JOSE header [RFC7515] of the
-      signed request object.  The Authorization Server MUST validate the
-      signature and the trust chain of the X.509 certificate.  If the
-      Authorization Server can establish trust in the Client Identifier
-      authenticated through the certificate, e.g., because the Client
-      Identifier is contained in a list of trusted Client Identifiers,
-      it may allow the client to freely choose the redirect_uri value.
-      If not, the redirect_uri value MUST match the Client Identifier
-      without the prefix x509_san_uri:. Example Client Identifier:
-      x509_san_uri:https://client.example.org/cb.
+   *  x509_hash: When the Client Identifier Prefix is x509_hash, the
+      Client Identifier MUST be a hash and match the hash of the leaf
+      certificate passed with the request.  The request MUST be signed
+      with the private key corresponding to the public key in the leaf
+      X.509 certificate of the certificate chain added to the request in
+      the x5c JOSE header parameter [@!RFC7515] of the signed request
+      object.  The value of x509_hash is the base64url encoded value of
+      the SHA-256 hash of the DER-encoded X.509 certificate.  The Wallet
+      MUST validate the signature and the trust chain of the X.509 leaf
+      certificate.  All verifier metadata other than the public key MUST
+      be obtained from the client_metadata parameter.  Example Client
+      Identifier: x509_hash:Uvo3HtuIxuhC92rShpgqcT3YXwrqRxWEviRiA0OZszk
 
-   *  https: This Client Identifier Scheme MUST NOT be registered.
+   *  https: This Client Identifier Prefix MUST NOT be registered.
 
 4.  Example
 
    The following is a non-normative example of an authorization request
-   with the redirect_uri Client ID Scheme:
+   with the redirect_uri Client ID Prefix:
 
    GET /authorize?
      response_type=code
@@ -313,17 +324,17 @@ Table of Contents
 
    Authorization servers that publish Authorization Server Metadata
    ([RFC8414]) MUST include the following properties to indicate support
-   for client ID schemes as described in this specification.
+   for client ID prefixes as described in this specification.
 
-   client_id_schemes_supported:  REQUIRED.  A JSON array of strings
-      indicating the clients ID schemes supported by this authorization
+   client_id_prefixes_supported:  REQUIRED.  A JSON array of strings
+      indicating the clients ID prefixes supported by this authorization
       server.
 
 6.  Security Considerations
 
 6.1.  Client Identifier Mixups
 
-   Confusing Clients using a Client Identifier Scheme with those using
+   Confusing Clients using a Client Identifier Prefix with those using
    none can lead to various mixup attacks.  Therefore, Authorization
    Servers MUST always use the full Client Identifier, including the
    prefix if provided, within the context of the Authorization Server or
@@ -340,10 +351,10 @@ Table of Contents
    Server Metadata" registry established in OAuth 2.0 Authorization
    Server Metadata [RFC8414].
 
-   *  Metadata Name: client_id_schemes_supported:
+   *  Metadata Name: client_id_prefixes_supported:
 
    *  Metadata Description: A JSON array of strings indicating the
-      client ID schemes supported by the authorization server.
+      client ID prefixes supported by the authorization server.
 
    *  Change Controller: IETF
 
