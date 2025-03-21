@@ -102,7 +102,7 @@ A Client Identifier is used by an OAuth 2.0 Client to identify itself to an Auth
 
 This specification defines the concept of a Client Identifier Scheme that indicates how an Authorization Server is supposed to interpret the Client Identifier and associated data in the process of Client identification, authentication, and authorization. The Client Identifier Scheme enables deployments of this specification to use different mechanisms to obtain and validate metadata of the Client beyond the scope of {{RFC6749}}.
 
-The Client Identifier Scheme is a string that MAY be communicated by the Client in a prefix within the `client_id` parameter in the Authorization Request. A fallback to pre-registered Clients as in {{RFC6749}} remains in place as a default mechanism in case no Client Identifier Scheme was provided. A certain Client Identifier Scheme may require the Client to sign the Authorization Request as means of authentication and/or pass additional parameters and require the Authorization Server to process them.
+The Client Identifier Scheme is a string that MAY be communicated by the Client in a prefix within the `client_id` parameter in the Authorization Request. A fallback to pre-registered Clients as in {{RFC6749}} or a default Client Identifier Scheme is in place as a default mechanism in case no Client Identifier Scheme was provided. A certain Client Identifier Scheme may require the Client to sign the Authorization Request as means of authentication and/or pass additional parameters and require the Authorization Server to process them.
 
 ## Syntax
 
@@ -112,23 +112,27 @@ In the `client_id` Authorization Request parameter and other places where the Cl
 
 Here, `<client_id_scheme>` is the Client Identifier Scheme and `<orig_client_id>` is an identifier for the Client within the namespace of that scheme. See {{client_identifier_schemes}} for Client Identifier Schemes defined by this specification.
 
-Authorization Servers MUST use the presence of a `:` (colon) character to determine whether a Client Identifier Scheme is used. If a `:` character is present, the Authorization Server MUST interpret the Client Identifier according to the Client Identifier Scheme, here defined as the string before the (first) `:` character. If the Authorization Server does not support the Client Identifier Scheme, the Authorization Server MUST refuse the request.
+Authorization Servers MUST use the presence of a `:` (colon) character and the content preceding it to determine whether a Client Identifier Scheme is used. If a `:` character is present, and the content preceding it is a recognized and supported Client Identifier Scheme value, the Authorization Server MUST interpret the Client Identifier according to the given Client Identifier Scheme. The Client Identifier Scheme is defined as the string before the (first) `:` character. If the Authorization Server does not support the Client Identifier Scheme, the Authorization Server MUST refuse the request.
 
 For example, an Authorization Request might contain `client_id=client_attestation:example-client` to indicate that the `client_attestation` Client Identifier Scheme is to be used and that within this scheme, the Client can be identified by the string `example-client`. The presentation would contain the full `client_attestation:example-client` string as the audience (intended receiver) and the same full string would be used as the Client Identifier anywhere in the OAuth flow.
 
 Note that the Client needs to determine which Client Identifier Schemes the Authorization Server supports prior to sending the Authorization Request in order to choose a supported scheme.
 
 
-## Pre-Registered Clients
+## Fallback for Unrecognized Client ID Schemes
 
 If a `:` character is not present in the Client Identifier, the Authorization Server MUST treat the Client Identifier as referencing a pre-registered client. This is equivalent to the {{RFC6749}} default behavior, i.e., the Client Identifier needs to be known to the Authorization Server in advance of the Authorization Request. The Client metadata is pre-registered using {{RFC7591}} or through out-of-band mechanisms.
 
-For example, if an Authorization Request contains `client_id=example-client`, the Authorization Server would interprete the Client Identifier as referring to a pre-registered client.
+For example, if an Authorization Request contains `client_id=example-client`, the Authorization Server would interpret the Client Identifier as referring to a pre-registered client.
 
-From this definition, it follows that pre-registered clients MUST NOT contain a `:` character in their Client Identifier.
+If a `:` character is present in the Client Identifier but the value preceding it is not a recognized and supported Client Identifier Scheme value, the Authorization Server MAY treat the Client Identifier as having a default Client Identifier Scheme.
+
+For example, an Authorization Request containing a `client_id` value of `https://client.example.com/metadata.json` could be interpreted by the Authorization Server as referring to a Client ID Metadata Document {{I-D.draft-parecki-oauth-client-id-metadata-document}}, with the default Client Identifier Scheme being `client-id-metadata-document`.
+
+From this definition, it follows that pre-registered clients MUST NOT contain a `:` character preceded immediately by a supported Client Identifier Scheme value in the first part of their Client Identifier.
 
 
-## https scheme
+### Example
 
 Deployments that use `https` URLs as client IDs and that have only one way to resolve client metadata from the URL, MAY use full https URL as the client ID. If there is only one way to resolve client metadata then there is no ambiguity in which metadata retrieval method to use, and are not susceptible to client identifier mixup attacks as described in {{client-id-mixups}}.
 
@@ -161,7 +165,7 @@ This specification defines the following Client Identifier Schemes, followed by 
 
 * `x509_san_dns`: When the Client Identifier Scheme is `x509_san_dns`, the Client Identifier MUST be a DNS name and match a `dNSName` Subject Alternative Name (SAN) {{RFC5280}} entry in the leaf certificate passed with the request. The request MUST be signed with the private key corresponding to the public key in the leaf X.509 certificate of the certificate chain added to the request in the `x5c` JOSE header {{RFC7515}} of the signed request object. The Authorization Server MUST validate the signature and the trust chain of the X.509 certificate. If the Authorization Server can establish trust in the Client Identifier authenticated through the certificate, e.g. because the Client Identifier is contained in a list of trusted Client Identifiers, it may allow the client to freely choose the `redirect_uri` value. If not, the FQDN of the `redirect_uri` value MUST match the Client Identifier without the prefix `x509_san_dns:`. Example Client Identifier: `x509_san_dns:client.example.org`.
 
-* `x509_san_uri`: When the Client Identifier Scheme is `x509_san_uri`, the Client Identifier MUST be a URI and match a `uniformResourceIdentifier` Subject Alternative Name (SAN) {{RFC5280}} entry in the leaf certificate passed with the request. The request MUST be signed with the private key corresponding to the public key in the leaf X.509 certificate of the certificate chain added to the request in the `x5c` JOSE header {{RFC7515}} of the signed request object. The Authorization Server MUST validate the signature and the trust chain of the X.509 certificate. If the Authorization Server can establish trust in the Client Identifier authenticated through the certificate, e.g., because the Client Identifier is contained in a list of trusted Client Identifiers, it may allow the client to freely choose the `redirect_uri` value. If not, the `redirect_uri` value MUST match the Client Identifier without the prefix `x509_san_uri:`. Example Client Identifier: `x509_san_uri:https://client.example.org/cb`.
+* `x509_hash`: When the Client Identifier Scheme is `x509_hash`, the Client Identifier MUST be a hash and match the hash of the leaf certificate passed with the request. The request MUST be signed with the private key corresponding to the public key in the leaf X.509 certificate of the certificate chain added to the request in the `x5c` JOSE header parameter [@!RFC7515] of the signed request object. The value of `x509_hash` is the base64url encoded value of the SHA-256 hash of the DER-encoded X.509 certificate. The Wallet MUST validate the signature and the trust chain of the X.509 leaf certificate. All verifier metadata other than the public key MUST be obtained from the `client_metadata` parameter. Example Client Identifier: `x509_hash:Uvo3HtuIxuhC92rShpgqcT3YXwrqRxWEviRiA0OZszk`
 
 * `https`: This Client Identifier Scheme MUST NOT be registered.
 
